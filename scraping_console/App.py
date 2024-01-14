@@ -55,6 +55,11 @@ def scrapingBooks(url):
                 }).find_all("li")[2].text.replace("Año de edición",
                                                   "").strip()
 
+                isbn = soupInfo.find("ul", {
+                    "class": "list"
+                }).find_all("li")[3].text.replace("ISBN",
+                                                  "").strip()
+
                 rating = soupInfo.find("div", {
                     "class": "estadisticas"
                 }).span.text.strip()
@@ -70,6 +75,7 @@ def scrapingBooks(url):
                     "coverImage": imgBook,
                     "genre": genre,
                     "yearEdition": yearEdition,
+                    "isbn":isbn,
                     "rating": rating,
                     "synopsis": synopsis,
                     "urlBook": urlInfoBook
