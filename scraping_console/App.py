@@ -22,85 +22,101 @@ booksGenres = [
 ]
 
 bookList = []
+
 def scrapingBooks(url):
-    while url:
-        responsePrincipal = requests.get(url)
-        soupPrincipal = BeautifulSoup(responsePrincipal.content, "html.parser")
+    try:
+        current_url = url
+        
+        while current_url:
+            responsePrincipal = requests.get(current_url)
+            soupPrincipal = BeautifulSoup(responsePrincipal.content, "html.parser")
 
-        items = soupPrincipal.find_all("div", {"class": "item"})
+            items = soupPrincipal.find_all("div", {"class": "item"})
 
-        for item in items:
-            pathInfoBook = item.find("a")
-            urlInfoBook = pathInfoBook['href']
+            for item in items:
+                try:
+                    pathInfoBook = item.find("a")
+                    urlInfoBook = pathInfoBook['href']
 
-            responseInfo = requests.get(urlInfoBook)
-            soupInfo = BeautifulSoup(responseInfo.content, "html.parser")
+                    try:
+                        responseInfo = requests.get(urlInfoBook)
+                        soupInfo = BeautifulSoup(responseInfo.content, "html.parser")
 
-            try:
-                author = soupInfo.find("div", {
-                    "class": "libro_info"
-                }).h3.small.text.strip()
+                        try:
+                            author = soupInfo.find("div", {
+                                "class": "libro_info"
+                            }).h3.small.text.strip()
 
-                titleBook = soupInfo.find("div", {
-                    "class": "libro_info"
-                }).h3.text.replace(author, "").strip()
+                            titleBook = soupInfo.find("div", {
+                                "class": "libro_info"
+                            }).h3.text.replace(author, "").strip()
 
-                imgBook = soupInfo.find("img", {"class": "imgLibros"})['src']
-                genre = soupInfo.find("ul", {
-                    "class": "list"
-                }).find_all("li")[0].text.replace("Género", "").strip()
+                            imgBook = soupInfo.find("img", {"class": "imgLibros"})['src']
+                            genre = soupInfo.find("ul", {
+                                "class": "list"
+                            }).find_all("li")[0].text.replace("Género", "").strip()
 
-                yearEdition = soupInfo.find("ul", {
-                    "class": "list"
-                }).find_all("li")[2].text.replace("Año de edición",
-                                                  "").strip()
+                            yearEdition = soupInfo.find("ul", {
+                                "class": "list"
+                            }).find_all("li")[2].text.replace("Año de edición",
+                                                            "").strip()
 
-                isbn = soupInfo.find("ul", {
-                    "class": "list"
-                }).find_all("li")[3].text.replace("ISBN",
-                                                  "").strip()
+                            isbn = soupInfo.find("ul", {
+                                "class": "list"
+                            }).find_all("li")[3].text.replace("ISBN",
+                                                            "").strip()
 
-                rating = soupInfo.find("div", {
-                    "class": "estadisticas"
-                }).span.text.strip()
+                            rating = soupInfo.find("div", {
+                                "class": "estadisticas"
+                            }).span.text.strip()
 
-                synopsis = soupInfo.find("div", {
-                    "class": "content_libro"
-                }).p.text.strip()
+                            synopsis = soupInfo.find("div", {
+                                "class": "content_libro"
+                            }).p.text.strip()
 
-                book = {
-                    "id": str(uuid.uuid4()),
-                    "title": titleBook,
-                    "author": author,
-                    "coverImage": imgBook,
-                    "genre": genre,
-                    "yearEdition": yearEdition,
-                    "isbn":isbn,
-                    "rating": rating,
-                    "synopsis": synopsis,
-                    "urlBook": urlInfoBook
-                }
+                            book = {
+                                "id": str(uuid.uuid4()),
+                                "title": titleBook,
+                                "author": author,
+                                "coverImage": imgBook,
+                                "genre": genre,
+                                "yearEdition": yearEdition,
+                                "isbn": isbn,
+                                "rating": rating,
+                                "synopsis": synopsis,
+                                "urlBook": urlInfoBook
+                            }
 
-                print(book, "\n")
-                bookList.append(book)
+                            print(book, "\n")
+                            bookList.append(book)
 
-                time.sleep(1)
+                            time.sleep(1)
 
-            except Exception as e:
-                print("Error:", e)
+                        except Exception as e:
+                            print("Error extrayendo datos:", e)
+                            continue
 
-            # Página siguiente
-            pagination = soupPrincipal.find(
-                'ul', {'class': 'pagination justify-content-center'})
-            if pagination and url != None:
+                    except Exception as e:
+                        print(f"Error accediendo a la página de un libro: {e}")
+                        continue
+
+                except Exception as e:
+                    print(f"Error procesando un item: {e}")
+                    continue
+
+            pagination = soupPrincipal.find('ul', {'class': 'pagination justify-content-center'})
+            if pagination:
                 nextLink = pagination.find('a', {'rel': 'next'})
                 if nextLink:
-                    url = nextLink['href']
+                    current_url = nextLink['href']
+                    print(f"Pasando a la siguiente página: {current_url}")
                 else:
-                    url = None
+                    current_url = None
             else:
-                url = None
+                current_url = None
 
+    except Exception as e:
+        print(f"Error accediendo a la página principal: {e}")
 
 def createJson(nameJson):
     currentDirectory = os.getcwd()
@@ -109,16 +125,13 @@ def createJson(nameJson):
     if not os.path.exists(jsonBookDirectory):
         os.makedirs(jsonBookDirectory)
 
-    bookListJson = json.dumps(bookList, ensure_ascii=False)
+    bookListJson = json.dumps(bookList, ensure_ascii=False, indent=2)
     print("\n\n")
     print(bookListJson)
 
     completePath = os.path.join(jsonBookDirectory, nameJson + ".json")
     with open(completePath, 'w', encoding='utf-8') as f:
         f.write(bookListJson)
-    
-    
-    
 
 def selectGenre():
     for index, genre in enumerate(booksGenres):
@@ -128,9 +141,8 @@ def selectGenre():
     genreSelected = booksGenres[indexGenre - 1]
     return genreSelected
 
-
 typeSearch = input(
-    "Seleccionar tipo de búsqueda:\n\t1 - Los 50 mejores\n\t2 - Todos los libros de un genero\n\t3 - Los 50 mejores de todos los generos\n\t4 - Todos los libros de un genero\n"
+    "Seleccionar tipo de búsqueda:\n\t1 - Los 50 mejores\n\t2 - Todos los libros de un genero\n\t3 - Los 50 mejores de todos los generos\n"
 )
 
 if typeSearch == "1":
@@ -151,13 +163,6 @@ elif typeSearch == "3":
         nameJson = genre
         scrapingBooks(url)
         createJson(nameJson)
-        bookList=[]
-elif typeSearch == "4":
-    for genre in booksGenres:
-        url = "https://quelibroleo.com/mejores-genero/" + genre
-        nameJson = genre
-        scrapingBooks(url)
-        createJson(nameJson)
-        bookList=[]
+        bookList = []
 else:
     print("Opción incorrecta")

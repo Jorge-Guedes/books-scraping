@@ -22,9 +22,9 @@ class PrincipalView:
     def __init__(self,window):
         self.window=window
 
-        #Frame superior
-        topFrame=tk.Frame(window,bg="#c5eaf0",width=855,height=150)
-        topFrame.place(x=745)
+        #frame superior
+        topFrame = tk.Frame(window, bg="#c5eaf0", width=920, height=150)  # width ajustado
+        topFrame.place(x=1000, y=0)
 
         labelNameJsonSelected=tk.Label(topFrame,text="Nombre Json:",font=("arial","12","bold"),bg="#c5eaf0")
         labelNameJsonSelected.place(x=20,y=10)
@@ -45,9 +45,9 @@ class PrincipalView:
         infoBookAgreeBtn.place(x=20,y=100)
         
 
-        #Frame izquierdo
-        leftFrame=tk.Frame(window,bg="#c5eaf0",width=745,height=850)
-        leftFrame.pack(fill="none",anchor="nw")
+        #frame izquierdo
+        leftFrame = tk.Frame(window, bg="#c5eaf0", width=830, height=930)
+        leftFrame.place(x=0, y=0)
 
         labelJsonName=tk.Label(leftFrame,text="Nombre del archivo Json",bg="#c5eaf0",font=("arial","14","bold"))
         leftFrame.update()#actualizo el frame para poder centrar el label
@@ -105,14 +105,14 @@ class PrincipalView:
                 rowButton+=1
 
         
-        #Frame muestra de libros scrapeados
-        centralFrame=tk.Frame(window,bg="#d4eff3",width=855,height=670)
-        centralFrame.place(x=745,y=150)
+        #frame muestra de libros scrapeados
+        centralFrame = tk.Frame(window, bg="#d4eff3", width=900, height=780)
+        centralFrame.place(x=1000, y=150)
 
         consoleCentralFrame = tk.Listbox(  
             centralFrame,  
-            width = 90,  
-            height = 32,  
+            width=125,
+            height=42,  
             font="bold",
             selectmode = 'SINGLE',  
             background = "black",
@@ -124,141 +124,197 @@ class PrincipalView:
 
         
         def setJsonName():
-            nameJsonSelected.config(text=txtNameJson.get())
+            try:
+                nameJsonSelected.config(text=txtNameJson.get())
+            except Exception as e:
+                print(f"Error al establecer nombre JSON: {e}")
 
         def setGenre(genre):
-            nameGenreSelected.config(text=genre.replace("-"," "))
+            try:
+                nameGenreSelected.config(text=genre.replace("-"," "))
+            except Exception as e:
+                print(f"Error al establecer género: {e}")
 
         def setSearchType(option):
-            if option==1:
-                nameSearchType.config(text="Los 50 mejores")
-            
-            if option==2:
-                nameSearchType.config(text="Todo el género")
+            try:
+                if option==1:
+                    nameSearchType.config(text="Los 50 mejores")
+                
+                if option==2:
+                    nameSearchType.config(text="Todo el género")
+            except Exception as e:
+                print(f"Error al establecer tipo de búsqueda: {e}")
 
 
         def startScraping(): 
-            if scrapingRunning:
-                    messagebox.showerror("Scraping activo","El programa está scrapeando los datos en este momento")
-            else:
-                if nameJsonSelected.cget("text")!="" and nameGenreSelected.cget("text")!="" and nameSearchType.cget("text")!="":
-                    print("Se puede empezar")
-                    nameJson=nameJsonSelected.cget("text")
-                    typeSearch=nameSearchType.cget("text")
-                    bookGenre=nameGenreSelected.cget("text").replace(" ","-")
-                    t = threading.Thread(target=getSearchDataAndStart, args=(nameJson, typeSearch, bookGenre))
-                    t.start()
-                    nameJsonSelected.config(text="")
-                    nameSearchType.config(text="")
-                    nameGenreSelected.config(text="")
+            try:
+                if scrapingRunning:
+                        messagebox.showerror("Scraping activo","El programa está scrapeando los datos en este momento")
                 else:
-                    messagebox.showerror("ERROR","Debe de introducir todos los datos")
+                    if nameJsonSelected.cget("text")!="" and nameGenreSelected.cget("text")!="" and nameSearchType.cget("text")!="":
+                        print("Se puede empezar")
+                        nameJson=nameJsonSelected.cget("text")
+                        typeSearch=nameSearchType.cget("text")
+                        bookGenre=nameGenreSelected.cget("text").replace(" ","-")
+                        t = threading.Thread(target=getSearchDataAndStart, args=(nameJson, typeSearch, bookGenre))
+                        t.start()
+                        nameJsonSelected.config(text="")
+                        nameSearchType.config(text="")
+                        nameGenreSelected.config(text="")
+                    else:
+                        messagebox.showerror("ERROR","Debe de introducir todos los datos")
+            except Exception as e:
+                messagebox.showerror("ERROR",f"Error al iniciar scraping: {e}")
         
 
         def getSearchDataAndStart(nameJson,typeSearch,bookGenre):
             global scrapingRunning
             scrapingRunning=True
 
-            if typeSearch=="Todo el género":
-                url="https://quelibroleo.com/libros/"+bookGenre
-            else:
-                url="https://quelibroleo.com/mejores-genero/"+bookGenre
-
+            try:
+                if typeSearch=="Todo el género":
+                    url="https://quelibroleo.com/libros/"+bookGenre
+                else:
+                    url="https://quelibroleo.com/mejores-genero/"+bookGenre
+            except Exception as e:
+                print(f"Error construyendo URL: {e}")
+                scrapingRunning=False
+                return
 
             bookList=[]
 
             actualScrapedBooks=60;
             actualPage=1;
             while url:
-                responsePrincipal = requests.get(url)
-                soupPrincipal = BeautifulSoup(responsePrincipal.content, "html.parser")
+                try:
+                    responsePrincipal = requests.get(url)
+                    responsePrincipal.raise_for_status()
+                except Exception as e:
+                    print(f"Error accediendo a página principal: {e}")
+                    break
 
-                items=soupPrincipal.find_all("div",{"class":"item"})
+                try:
+                    soupPrincipal = BeautifulSoup(responsePrincipal.content, "html.parser")
+                    items=soupPrincipal.find_all("div",{"class":"item"})
+                except Exception as e:
+                    print(f"Error parseando página principal: {e}")
+                    break
 
                 for item in items:
-                    pathInfoBook = item.find("a")
-                    urlInfoBook=pathInfoBook['href']
-
-                    responseInfo=requests.get(urlInfoBook)
-                    soupInfo=BeautifulSoup(responseInfo.content,"html.parser")
-
                     try:
-                        author=soupInfo.find("div", {"class": "libro_info"}).h3.small.text.strip()
-                        titleBook = soupInfo.find("div", {"class": "libro_info"}).h3.text.replace(author,"").strip()
-                        imgBook=soupInfo.find("img",{"class":"imgLibros"})['src']
-                        genre=soupInfo.find("ul",{"class":"list"}).find_all("li")[0].text.replace("Género","").strip()
-                        yearEdition=soupInfo.find("ul",{"class":"list"}).find_all("li")[2].text.replace("Año de edición","").strip()
-                        rating=soupInfo.find("div",{"class":"estadisticas"}).span.text.strip()
-                        synopsis=soupInfo.find("div",{"class":"content_libro"}).p.text.strip()
+                        pathInfoBook = item.find("a")
+                        if not pathInfoBook or 'href' not in pathInfoBook.attrs:
+                            print("No se encontró enlace válido en un item")
+                            continue
+                            
+                        urlInfoBook=pathInfoBook['href']
 
-                        book={
-                            "id":str(uuid.uuid4()),
-                            "title":titleBook,
-                            "author":author,
-                            "coverImage":imgBook,
-                            "genre":genre,
-                            "yearEdition":yearEdition,
-                            "rating":rating,
-                            "synopsis":synopsis,
-                            "urlBook":urlInfoBook
+                        try:
+                            responseInfo=requests.get(urlInfoBook)
+                            responseInfo.raise_for_status()
+                        except Exception as e:
+                            print(f"Error accediendo a página del libro: {e}")
+                            continue
 
-                        }
+                        try:
+                            soupInfo=BeautifulSoup(responseInfo.content,"html.parser")
+                        except Exception as e:
+                            print(f"Error parseando página del libro: {e}")
+                            continue
 
-                        #mostrar en frame
-                        consoleCentralFrame.insert(tk.END,book)
+                        try:
+                            author=soupInfo.find("div", {"class": "libro_info"}).h3.small.text.strip()
+                            titleBook = soupInfo.find("div", {"class": "libro_info"}).h3.text.replace(author,"").strip()
+                            imgBook=soupInfo.find("img",{"class":"imgLibros"})['src']
+                            genre=soupInfo.find("ul",{"class":"list"}).find_all("li")[0].text.replace("Género","").strip()
+                            yearEdition=soupInfo.find("ul",{"class":"list"}).find_all("li")[2].text.replace("Año de edición","").strip()
+                            rating=soupInfo.find("div",{"class":"estadisticas"}).span.text.strip()
+                            synopsis=soupInfo.find("div",{"class":"content_libro"}).p.text.strip()
 
-                        print(book,"\n")                
-                        bookList.append(book);
+                            book={
+                                "id":str(uuid.uuid4()),
+                                "title":titleBook,
+                                "author":author,
+                                "coverImage":imgBook,
+                                "genre":genre,
+                                "yearEdition":yearEdition,
+                                "rating":rating,
+                                "synopsis":synopsis,
+                                "urlBook":urlInfoBook
 
+                            }
 
-                        time.sleep(1);
+                            #mostrar en frame
+                            consoleCentralFrame.insert(tk.END,book)
 
-                        if len(bookList)==actualScrapedBooks:
-                            continueScraping=messagebox.askyesno("CONFIRMAR",f"Llevas {actualScrapedBooks} libros y vas por la página {actualPage}. Deseas continuar?")
-                            if continueScraping:
-                                actualScrapedBooks+=50;
-                            else:
-                                url=None;
-                                break;
+                            print(book,"\n")                
+                            bookList.append(book);
+
+                            time.sleep(1);
+
+                            if len(bookList)==actualScrapedBooks:
+                                continueScraping=messagebox.askyesno("CONFIRMAR",f"Llevas {actualScrapedBooks} libros y vas por la página {actualPage}. Deseas continuar?")
+                                if continueScraping:
+                                    actualScrapedBooks+=50;
+                                else:
+                                    url=None;
+                                    break;
+
+                        except Exception as e:
+                            print("Error extrayendo datos del libro:",e)
+                            continue
 
                     except Exception as e:
-                        print("Error:",e);   
+                        print(f"Error procesando item: {e}")
+                        continue
 
-                # Página siguiente
-                pagination = soupPrincipal.find('ul', {'class': 'pagination justify-content-center'});
-                if pagination and url!=None:
-                    nextLink = pagination.find('a', {'rel': 'next'});
-                    if nextLink:
-                        url = nextLink['href'];
-                        actualPage+=1;
+                # pagina siguiente
+                try:
+                    pagination = soupPrincipal.find('ul', {'class': 'pagination justify-content-center'});
+                    if pagination and url!=None:
+                        nextLink = pagination.find('a', {'rel': 'next'});
+                        if nextLink:
+                            url = nextLink['href'];
+                            actualPage+=1;
+                        else:
+                            url = None;
                     else:
                         url = None;
-                else:
-                    url = None;
+                except Exception as e:
+                    print(f"Error buscando paginación: {e}")
+                    url = None
             
-            currentDirectory=os.getcwd()
-            jsonBookDirectory=os.path.join(currentDirectory,"Libros_json")
+            try:
+                currentDirectory=os.getcwd()
+                jsonBookDirectory=os.path.join(currentDirectory,"Libros_json")
 
-            if not os.path.exists(jsonBookDirectory):
-                os.makedirs(jsonBookDirectory)
+                if not os.path.exists(jsonBookDirectory):
+                    os.makedirs(jsonBookDirectory)
 
-            bookListJson=json.dumps(bookList, ensure_ascii=False)
-            print("\n\n")
-            print(bookListJson)
+                bookListJson=json.dumps(bookList, ensure_ascii=False, indent=2)
+                print("\n\n")
+                print(bookListJson)
 
-            completePath=os.path.join(jsonBookDirectory,nameJson+".json")
-            with open(completePath,'w',encoding='utf-8') as f:
-                f.write(bookListJson)
+                completePath=os.path.join(jsonBookDirectory,nameJson+".json")
+                with open(completePath,'w',encoding='utf-8') as f:
+                    f.write(bookListJson)
 
-            scrapingRunning=False
-            messagebox.showinfo("FIN",f"Se ha terminado el scrapeo con un total de {len(bookList)} libros")
+                messagebox.showinfo("FIN",f"Se ha terminado el scrapeo con un total de {len(bookList)} libros")
+
+            except Exception as e:
+                print(f"Error guardando JSON: {e}")
+                messagebox.showerror("ERROR",f"Error al guardar el archivo: {e}")
+
+            finally:
+                scrapingRunning=False
 
 
 
 root=tk.Tk()
 view=PrincipalView(root)
 root.title("Scraping Libros")
-root.geometry("1600x850")
-root.resizable(0,0)
-root.configure(bg = "#d4eff3")
+root.geometry("1920x1080")
+#root.resizable(0,0)
+root.resizable(True, True)
+root.configure(bg = "#c5eaf0")
 root.mainloop()
