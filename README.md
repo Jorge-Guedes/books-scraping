@@ -112,20 +112,20 @@ python3 App.py
 ## Estructura de Datos
 Los datos se organizan en archivos JSON con la siguiente estructura:
 
-<div style="background: #fffaf0; border: 1px solid #e6c9a8; padding: 20px; margin: 20px 0; border-radius: 8px; font-family: 'Courier New', monospace; font-size: 14px; line-height: 1.6; color: #5a4a42;">
-{<br>
-&nbsp;&nbsp;<span style="color: #9c6ade;">"id"</span>: <span style="color: #22863a;">"uuid-unico"</span>,<br>
-&nbsp;&nbsp;<span style="color: #9c6ade;">"title"</span>: <span style="color: #22863a;">"Título del libro"</span>,<br>
-&nbsp;&nbsp;<span style="color: #9c6ade;">"author"</span>: <span style="color: #22863a;">"Autor del libro"</span>,<br>
-&nbsp;&nbsp;<span style="color: #9c6ade;">"coverImage"</span>: <span style="color: #22863a;">"URL de la portada"</span>,<br>
-&nbsp;&nbsp;<span style="color: #9c6ade;">"genre"</span>: <span style="color: #22863a;">"Género literario"</span>,<br>
-&nbsp;&nbsp;<span style="color: #9c6ade;">"yearEdition"</span>: <span style="color: #22863a;">"Año de edición"</span>,<br>
-&nbsp;&nbsp;<span style="color: #9c6ade;">"isbn"</span>: <span style="color: #22863a;">"ISBN del libro"</span>,<br>
-&nbsp;&nbsp;<span style="color: #9c6ade;">"rating"</span>: <span style="color: #22863a;">"Calificación"</span>,<br>
-&nbsp;&nbsp;<span style="color: #9c6ade;">"synopsis"</span>: <span style="color: #22863a;">"Sinopsis completa"</span>,<br>
-&nbsp;&nbsp;<span style="color: #9c6ade;">"urlBook"</span>: <span style="color: #22863a;">"URL del libro en Quelibroleo"</span><br>
+```json
+{
+  "id": "uuid-unico",
+  "title": "Título del libro",
+  "author": "Autor del libro",
+  "coverImage": "URL de la portada",
+  "genre": "Género literario",
+  "yearEdition": "Año de edición",
+  "isbn": "ISBN del libro",
+  "rating": "Calificación",
+  "synopsis": "Sinopsis completa",
+  "urlBook": "URL del libro en Quelibroleo"
 }
-</div>
+```
 
 ## Consideraciones de Uso
 ### Aspectos Técnicos
