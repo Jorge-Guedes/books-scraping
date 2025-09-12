@@ -1,5 +1,5 @@
 #### **TECH**
-![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
+[![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
 # Scraping de Libros - Quelibroleo
 Aplicación de escritorio para realizar scraping de información de libros desde el sitio web Quelibroleo.com. Incluye tres versiones diferentes: una de línea de comandos para scraping general, otra especializada en novedades literarias, y una interfaz gráfica completa desarrollada con Tkinter.
 
