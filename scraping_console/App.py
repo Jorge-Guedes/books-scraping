@@ -5,90 +5,105 @@ import time
 import os
 import uuid
 
-booksGenres = [
-    "actores", "arte", "autoayuda", "autoayuda-y-espiritualidad",
-    "biografias-memorias", "ciencias", "ciencias-humanas",
-    "ciencias-politicas-y-sociales", "clasicos-de-la-literatura", "cocina",
-    "comics-novela-grafica", "deportes-y-juegos", "derecho",
-    "dietetica-y-nutricion", "economia", "empresa", "ensayo",
-    "estudios-y-ensayos", "fantastica-ciencia-ficcion", "ficcion-literaria",
-    "filologia", "fotografia", "guias-de-viaje", "historia",
-    "historia-del-cine", "historica-y-aventuras", "humor",
-    "infantil-y-juvenil", "informatica", "juvenil", "lecturas-complementarias",
-    "literatura-contemporanea", "medicina", "musica", "narrativa",
-    "narrativa-historica", "no-ficcion", "novela-negra-intriga-terror",
-    "poesia", "poesia-teatro", "psicologia-y-pedagogia", "romantica-erotica",
-    "varios"
-]
 
-bookList = []
+def get_books_genres():
+    url = "https://quelibroleo.com/web/public/mejores-genero"
+    response_page = requests.get(url)
+    soup_page = BeautifulSoup(response_page.content, "html.parser")
 
-def scrapingBooks(url):
+    books_genres = []
+
+    try:
+        genres_div = soup_page.find("div", {"class":"content"})
+        a_items = genres_div.find_all("a")
+        for item in a_items:
+            first_span = item.find("span")
+            if first_span:
+                span_text = first_span.text.strip().lower()
+                refined_text = span_text.replace(", ", "-").replace(" ", "-").replace("á","a").replace("é","e").replace("í","i").replace("ó","o").replace("ú","u")
+                books_genres.append(refined_text)
+        
+        return books_genres
+
+    except Exception as e:
+        print("Error extrayendo los géneros:", e)
+    
+
+book_list = []
+def scraping_books(url, enable_limit, limit_per_genre):
     try:
         current_url = url
         
         while current_url:
-            responsePrincipal = requests.get(current_url)
-            soupPrincipal = BeautifulSoup(responsePrincipal.content, "html.parser")
+            response_principal = requests.get(current_url)
+            soup_principal = BeautifulSoup(response_principal.content, "html.parser")
 
-            items = soupPrincipal.find_all("div", {"class": "item"})
+            items = soup_principal.find_all("div", {"class": "item"})
 
             for item in items:
+
+                print(f"TAMAÑO DE LA LISTA: {len(book_list)}")
+                if enable_limit and len(book_list) == 50:
+                    return
+
+                if limit_per_genre and len(book_list) == 50:
+                    return
+
                 try:
-                    pathInfoBook = item.find("a")
-                    urlInfoBook = pathInfoBook['href']
+                    path_info_book = item.find("a")
+                    url_info_book = path_info_book['href']
 
                     try:
-                        responseInfo = requests.get(urlInfoBook)
-                        soupInfo = BeautifulSoup(responseInfo.content, "html.parser")
+                        response_info = requests.get(url_info_book)
+                        soup_info = BeautifulSoup(response_info.content, "html.parser")
 
                         try:
-                            author = soupInfo.find("div", {
+                            author = soup_info.find("div", {
                                 "class": "libro_info"
                             }).h3.small.text.strip()
 
-                            titleBook = soupInfo.find("div", {
+                            title_book = soup_info.find("div", {
                                 "class": "libro_info"
                             }).h3.text.replace(author, "").strip()
 
-                            imgBook = soupInfo.find("img", {"class": "imgLibros"})['src']
-                            genre = soupInfo.find("ul", {
+                            img_book = soup_info.find("img", {"class": "imgLibros"})['src']
+                            genre = soup_info.find("ul", {
                                 "class": "list"
                             }).find_all("li")[0].text.replace("Género", "").strip()
 
-                            yearEdition = soupInfo.find("ul", {
+                            year_edition = soup_info.find("ul", {
                                 "class": "list"
                             }).find_all("li")[2].text.replace("Año de edición",
                                                             "").strip()
 
-                            isbn = soupInfo.find("ul", {
+                            isbn = soup_info.find("ul", {
                                 "class": "list"
                             }).find_all("li")[3].text.replace("ISBN",
                                                             "").strip()
 
-                            rating = soupInfo.find("div", {
+                            rating = soup_info.find("div", {
                                 "class": "estadisticas"
                             }).span.text.strip()
 
-                            synopsis = soupInfo.find("div", {
+                            synopsis = soup_info.find("div", {
                                 "class": "content_libro"
                             }).p.text.strip()
 
                             book = {
                                 "id": str(uuid.uuid4()),
-                                "title": titleBook,
+                                "title": title_book,
                                 "author": author,
-                                "coverImage": imgBook,
+                                "coverImage": img_book,
                                 "genre": genre,
-                                "yearEdition": yearEdition,
+                                "yearEdition": year_edition,
                                 "isbn": isbn,
                                 "rating": rating,
                                 "synopsis": synopsis,
-                                "urlBook": urlInfoBook
+                                "urlBook": url_info_book
                             }
 
                             print(book, "\n")
-                            bookList.append(book)
+                            book_list.append(book)
 
                             time.sleep(1)
 
@@ -104,11 +119,11 @@ def scrapingBooks(url):
                     print(f"Error procesando un item: {e}")
                     continue
 
-            pagination = soupPrincipal.find('ul', {'class': 'pagination justify-content-center'})
+            pagination = soup_principal.find('ul', {'class': 'pagination justify-content-center'})
             if pagination:
-                nextLink = pagination.find('a', {'rel': 'next'})
-                if nextLink:
-                    current_url = nextLink['href']
+                next_link = pagination.find('a', {'rel': 'next'})
+                if next_link:
+                    current_url = next_link['href']
                     print(f"Pasando a la siguiente página: {current_url}")
                 else:
                     current_url = None
@@ -118,51 +133,55 @@ def scrapingBooks(url):
     except Exception as e:
         print(f"Error accediendo a la página principal: {e}")
 
-def createJson(nameJson):
-    currentDirectory = os.getcwd()
-    jsonBookDirectory = os.path.join(currentDirectory, "Libros_json")
+def create_json(name_json):
+    current_directory = os.getcwd()
+    json_book_directory = os.path.join(current_directory, "Libros_json")
 
-    if not os.path.exists(jsonBookDirectory):
-        os.makedirs(jsonBookDirectory)
+    if not os.path.exists(json_book_directory):
+        os.makedirs(json_book_directory)
 
-    bookListJson = json.dumps(bookList, ensure_ascii=False, indent=2)
+    book_list_json = json.dumps(book_list, ensure_ascii=False, indent=2)
     print("\n\n")
-    print(bookListJson)
+    print(book_list_json)
 
-    completePath = os.path.join(jsonBookDirectory, nameJson + ".json")
-    with open(completePath, 'w', encoding='utf-8') as f:
-        f.write(bookListJson)
+    complete_path = os.path.join(json_book_directory, name_json + ".json")
+    with open(complete_path, 'w', encoding='utf-8') as f:
+        f.write(book_list_json)
 
-def selectGenre():
-    for index, genre in enumerate(booksGenres):
+def select_genre():
+    for index, genre in enumerate(books_genres):
         print((index + 1), genre.replace("-", " "))
 
-    indexGenre = int(input("\nSelecciona el género: "))
-    genreSelected = booksGenres[indexGenre - 1]
-    return genreSelected
+    index_genre = int(input("\nSelecciona el género: "))
+    genre_selected = books_genres[index_genre - 1]
+    return genre_selected
 
-typeSearch = input(
-    "Seleccionar tipo de búsqueda:\n\t1 - Los 50 mejores\n\t2 - Todos los libros de un genero\n\t3 - Los 50 mejores de todos los generos\n"
+# Obtener los géneros primero
+books_genres = get_books_genres()
+
+type_search = input(
+    "Seleccionar tipo de búsqueda:\n\t1 - Top 50 por género\n\t2 - Todos los libros por género\n\t3 - Top 50 de cada género\n"
 )
 
-if typeSearch == "1":
-    genreSelected = selectGenre()
-    url = "https://quelibroleo.com/libros/" + genreSelected
-    nameJson = genreSelected
-    scrapingBooks(url)
-    createJson(nameJson)
-elif typeSearch == "2":
-    genreSelected = selectGenre()
-    url = "https://quelibroleo.com/mejores-genero/" + genreSelected
-    nameJson = genreSelected
-    scrapingBooks(url)
-    createJson(nameJson)
-elif typeSearch == "3":
-    for genre in booksGenres:
+if type_search == "1":
+    genre_selected = select_genre()
+    url = "https://quelibroleo.com/web/public/libros/" + genre_selected
+    name_json = genre_selected
+    scraping_books(url, True, False)
+    create_json(name_json)
+elif type_search == "2":
+    genre_selected = select_genre()
+    url = "https://quelibroleo.com/mejores-genero/" + genre_selected
+    name_json = genre_selected
+    scraping_books(url, False, False)
+    create_json(name_json)
+elif type_search == "3":
+    for genre in books_genres:
         url = "https://quelibroleo.com/mejores-genero/" + genre
-        nameJson = genre
-        scrapingBooks(url)
-        createJson(nameJson)
-        bookList = []
+        name_json = genre
+        scraping_books(url, False, True)
+        create_json(name_json)
+        book_list = []
 else:
     print("Opción incorrecta")
+
