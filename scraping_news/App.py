@@ -5,96 +5,96 @@ import time
 import os
 import uuid
 
-newBooksList = []
+new_books_list = []
 
-def scrapingBooks(url):
+def scraping_books(url):
     try:
-        responsePrincipal = requests.get(url)
-        responsePrincipal.raise_for_status()
+        response_principal = requests.get(url)
+        response_principal.raise_for_status()
     except Exception as e:
         print(f"Error al acceder a la página principal: {e}")
         return
 
     try:
-        soupPrincipal = BeautifulSoup(responsePrincipal.content, "html.parser")
-        newCarousel = soupPrincipal.find("div", {"class": "carousel novedades"})
+        soup_principal = BeautifulSoup(response_principal.content, "html.parser")
+        new_carousel = soup_principal.find("div", {"class": "carousel novedades"})
         
-        if not newCarousel:
+        if not new_carousel:
             print("No se encontró el carrusel de novedades")
             return
             
-        items = newCarousel.find_all("div", {"class": "item"})
+        items = new_carousel.find_all("div", {"class": "item"})
     except Exception as e:
         print(f"Error al parsear la página principal: {e}")
         return
 
     for item in items:
         try:
-            pathInfoBook = item.find("a")
-            if not pathInfoBook or 'href' not in pathInfoBook.attrs:
+            path_info_book = item.find("a")
+            if not path_info_book or 'href' not in path_info_book.attrs:
                 print("No se encontró enlace válido en un item")
                 continue
                 
-            urlInfoBook = pathInfoBook['href']
+            url_info_book = path_info_book['href']
 
             try:
-                responseInfo = requests.get(urlInfoBook)
-                responseInfo.raise_for_status()
+                response_info = requests.get(url_info_book)
+                response_info.raise_for_status()
             except Exception as e:
                 print(f"Error al acceder a la página del libro: {e}")
                 continue
 
             try:
-                soupInfo = BeautifulSoup(responseInfo.content, "html.parser")
+                soup_info = BeautifulSoup(response_info.content, "html.parser")
             except Exception as e:
                 print(f"Error al parsear la página del libro: {e}")
                 continue
 
             try:
-                author = soupInfo.find("div", {
+                author = soup_info.find("div", {
                     "class": "libro_info"
                 }).h3.small.text.strip()
 
-                titleBook = soupInfo.find("div", {
+                title_book = soup_info.find("div", {
                     "class": "libro_info"
                 }).h3.text.replace(author, "").strip()
 
-                imgBook = soupInfo.find("img", {"class": "imgLibros"})['src']
-                genre = soupInfo.find("ul", {
+                img_book = soup_info.find("img", {"class": "imgLibros"})['src']
+                genre = soup_info.find("ul", {
                     "class": "list"
                 }).find_all("li")[0].text.replace("Género", "").strip()
 
-                yearEdition = soupInfo.find("ul", {
+                year_edition = soup_info.find("ul", {
                     "class": "list"
                 }).find_all("li")[2].text.replace("Año de edición", "").strip()
 
-                isbn = soupInfo.find("ul", {
+                isbn = soup_info.find("ul", {
                         "class": "list"
                     }).find_all("li")[3].text.replace("ISBN", "").strip()
 
-                rating = soupInfo.find("div", {
+                rating = soup_info.find("div", {
                     "class": "estadisticas"
                 }).span.text.strip()
 
-                synopsis = soupInfo.find("div", {
+                synopsis = soup_info.find("div", {
                     "class": "content_libro"
                 }).p.text.strip()
 
                 book = {
                     "id": str(uuid.uuid4()),
-                    "title": titleBook,
+                    "title": title_book,
                     "author": author,
-                    "coverImage": imgBook,
+                    "cover_image": img_book,
                     "genre": genre,
-                    "yearEdition": yearEdition,
+                    "year_edition": year_edition,
                     "isbn": isbn,
                     "rating": rating,
                     "synopsis": synopsis,
-                    "urlBook": urlInfoBook
+                    "url_book": url_info_book
                 }
 
                 print(book, "\n")
-                newBooksList.append(book)
+                new_books_list.append(book)
 
                 time.sleep(1)
 
@@ -106,25 +106,25 @@ def scrapingBooks(url):
             print(f"Error procesando un item: {e}")
             continue
 
-def createJson(nameJson):
+def create_json(name_json):
     try:
-        currentDirectory = os.getcwd()
-        jsonBookDirectory = os.path.join(currentDirectory, "Libros_json")
+        current_directory = os.getcwd()
+        json_book_directory = os.path.join(current_directory, "Libros_json")
 
-        if not os.path.exists(jsonBookDirectory):
-            os.makedirs(jsonBookDirectory)
+        if not os.path.exists(json_book_directory):
+            os.makedirs(json_book_directory)
 
-        bookListJson = json.dumps(newBooksList, ensure_ascii=False, indent=2)
+        book_list_json = json.dumps(new_books_list, ensure_ascii=False, indent=2)
         print("\n\n")
-        print(bookListJson)
+        print(book_list_json)
 
-        completePath = os.path.join(jsonBookDirectory, nameJson + ".json")
-        with open(completePath, 'w', encoding='utf-8') as f:
-            f.write(bookListJson)
+        complete_path = os.path.join(json_book_directory, name_json + ".json")
+        with open(complete_path, 'w', encoding='utf-8') as f:
+            f.write(book_list_json)
             
     except Exception as e:
         print(f"Error creando el JSON: {e}")
 
 url = "https://quelibroleo.com/"
-scrapingBooks(url)
-createJson("novedades")
+scraping_books(url)
+create_json("novedades")

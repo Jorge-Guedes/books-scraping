@@ -93,13 +93,13 @@ def scraping_books(url, enable_limit, limit_per_genre):
                                 "id": str(uuid.uuid4()),
                                 "title": title_book,
                                 "author": author,
-                                "coverImage": img_book,
+                                "cover_image": img_book,
                                 "genre": genre,
-                                "yearEdition": year_edition,
+                                "year_edition": year_edition,
                                 "isbn": isbn,
                                 "rating": rating,
                                 "synopsis": synopsis,
-                                "urlBook": url_info_book
+                                "url_book": url_info_book
                             }
 
                             print(book, "\n")

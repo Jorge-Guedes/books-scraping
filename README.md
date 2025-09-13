@@ -51,7 +51,7 @@ Si no está instalado, seguir las instrucciones según el sistema operativo:
 
 2. Crear entorno virtual (recomendado):
     ```bash
-    python -m venv venv
+    python3 -m venv venv
     ```  
 3. Activar entorno virtual:
 
@@ -93,10 +93,10 @@ python3 App.py
 
 ## Funcionalidades
 ### Características Principales
-- Scraping de 43 géneros literarios diferentes
+- Scraping de géneros literarios diferentes
 - Dos modos de operación: "Los 50 mejores" y "Todo el género"
 - Obtención de novedades literarias actualizadas
-- Interfaz gráfica intuitiva con selección visual de parámetros
+- Interfaz gráfica con selección visual de parámetros
 - Progreso en tiempo real del proceso de scraping
 - Exportación automática a formato JSON
 
@@ -117,13 +117,13 @@ Los datos se organizan en archivos JSON con la siguiente estructura:
   "id": "uuid-unico",
   "title": "Título del libro",
   "author": "Autor del libro",
-  "coverImage": "URL de la portada",
+  "cover_image": "URL de la portada",
   "genre": "Género literario",
-  "yearEdition": "Año de edición",
+  "year_edition": "Año de edición",
   "isbn": "ISBN del libro",
   "rating": "Calificación",
   "synopsis": "Sinopsis completa",
-  "urlBook": "URL del libro en Quelibroleo"
+  "url_book": "URL del libro en Quelibroleo"
 }
 ```
 
