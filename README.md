@@ -93,8 +93,8 @@ python3 app_tkinter.py
 
 ## Funcionalidades
 ### Características Principales
-- Scraping de géneros literarios diferentes
-- Dos modos de operación: "Los 50 mejores" y "Todo el género"
+- Scraping de géneros diferentes literarios
+- Tres modos de operación: "Top 50 por género", "Todos los líbros por género" y "Top 50 de cada género"
 - Obtención de novedades literarias actualizadas
 - Interfaz gráfica con selección visual de parámetros
 - Progreso en tiempo real del proceso de scraping
