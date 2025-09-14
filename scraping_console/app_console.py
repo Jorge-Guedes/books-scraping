@@ -5,7 +5,6 @@ import time
 import os
 import uuid
 
-
 def get_books_genres():
     url = "https://quelibroleo.com/web/public/mejores-genero"
     response_page = requests.get(url)
@@ -27,7 +26,6 @@ def get_books_genres():
 
     except Exception as e:
         print("Error extrayendo los géneros:", e)
-    
 
 book_list = []
 def scraping_books(url, enable_limit, limit_per_genre):

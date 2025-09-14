@@ -6,11 +6,11 @@ Aplicación de escritorio para realizar scraping de información de libros desde
 ## Descripción del Proyecto
 El proyecto está organizado en tres módulos principales:
 
-- **scraping_console**: Versión de línea de comandos para scraping general de libros por géneros literarios. Permite extraer información de libros basándose en categorías específicas.
+- **app_console**: Versión de línea de comandos para scraping general de libros por géneros literarios. Permite extraer información de libros basándose en categorías específicas.
 
-- **scraping_news**: Versión especializada en la obtención de novedades literarias. Se enfoca en libros recientemente añadidos o actualizados en la plataforma.
+- **get_news**: Versión especializada en la obtención de novedades literarias. Se enfoca en libros recientemente añadidos o actualizados en la plataforma.
 
-- **scraping_tkinter**: Versión completa con interfaz gráfica que integra todas las funcionalidades de las versiones anteriores en una aplicación de escritorio con interfaz intuitiva.
+- **app_tkinter**: Versión completa con interfaz gráfica que integra todas las funcionalidades de las versiones anteriores en una aplicación de escritorio con interfaz intuitiva.
 
 Cada módulo genera automáticamente una carpeta **Libros_json** donde se almacenan los resultados del scraping en formato JSON.
 
@@ -76,18 +76,18 @@ Si no está instalado, seguir las instrucciones según el sistema operativo:
 ### Versión de Consola (Scraping General)
 ```bash
 cd scraping_console 
-python3 App.py
+python3 app_console.py
 ``` 
 
 ### Versión de Novedades Literarias
 ```bash
 cd scraping_news  
-python3 App.py
+python3 get_news.py
 ```
 ### Versión con Interfaz Gráfica
 ```bash
 cd scraping_tkinter  
-python3 App.py
+python3 app_tkinter.py
 ```
 **Nota importante**: La carpeta **Libros_json** se crea automáticamente dentro de cada directorio correspondiente cuando se ejecuta el scraping por primera vez. No es necesario crearla manualmente.
 
