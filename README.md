@@ -1,28 +1,37 @@
 #### **TECH**
 [![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
-# Scraping de Libros - Quelibroleo
-Aplicación de escritorio para realizar scraping de información de libros desde el sitio web Quelibroleo.com. Incluye tres versiones diferentes: una de línea de comandos para scraping general, otra especializada en novedades literarias, y una interfaz gráfica completa desarrollada con Tkinter.
 
-## Descripción del Proyecto
-El proyecto está organizado en tres módulos principales:
+---
 
-- **app_console**: Versión de línea de comandos para scraping general de libros por géneros literarios. Permite extraer información de libros basándose en categorías específicas.
+## 🌐 Language / Idioma
 
-- **get_news**: Versión especializada en la obtención de novedades literarias. Se enfoca en libros recientemente añadidos o actualizados en la plataforma.
+- **[English](README.md)** | **[Español](README.es.md)**
 
-- **app_tkinter**: Versión completa con interfaz gráfica que integra todas las funcionalidades de las versiones anteriores en una aplicación de escritorio con interfaz intuitiva.
+---
 
-Cada módulo genera automáticamente una carpeta **Libros_json** donde se almacenan los resultados del scraping en formato JSON.
+# Book Scraping - Quelibroleo
+Desktop application for scraping book information from the Quelibroleo.com website. Includes three different versions: a command-line version for general scraping, another specialized in literary news, and a complete graphical interface developed with Tkinter.
 
-## Requisitos Previos
-### Instalación de pip
-Python generalmente incluye pip por defecto en las versiones recientes. Para verificar si pip está instalado:
+## Project Description
+The project is organized into three main modules:
+
+- **app_console**: Command-line version for general book scraping by literary genres. Allows extracting book information based on specific categories.
+
+- **get_news**: Specialized version for obtaining literary news. Focuses on books recently added or updated on the platform.
+
+- **app_tkinter**: Complete version with graphical interface that integrates all functionalities from previous versions into a desktop application with an intuitive interface.
+
+Each module automatically creates a **Libros_json** folder where scraping results are stored in JSON format.
+
+## Prerequisites
+### pip Installation
+Python generally includes pip by default in recent versions. To verify if pip is installed:
 
 ```bash
 python -m pip --version
 ```
 
-Si no está instalado, seguir las instrucciones según el sistema operativo:
+If not installed, follow the instructions according to your operating system:
 
 - **Ubuntu/Debian**:
   ```bash
@@ -31,9 +40,9 @@ Si no está instalado, seguir las instrucciones según el sistema operativo:
   ```
 
 - **Windows**:  
-  - Descargar el instalador oficial de Python desde python.org, que incluye pip por defecto.
+  - Download the official Python installer from python.org, which includes pip by default.
 
-### Dependencias del sistema para Tkinter
+### System Dependencies for Tkinter
 - **Ubuntu/Debian**:  
   ```bash
   sudo apt update  
@@ -41,19 +50,19 @@ Si no está instalado, seguir las instrucciones según el sistema operativo:
   ```
 
 - **Windows**:  
-  - Tkinter viene incluido con las instalaciones estándar de Python. Para verificar:  
+  - Tkinter comes included with standard Python installations. To verify: 
   ```bash
   python -m tkinter
   ```
 
-## Instalación y Configuración
-1. Clonar o descargar el proyecto en el directorio local.
+## Installation and Configuration
+1. Clone or download the project to your local directory.
 
-2. Crear entorno virtual (recomendado):
+2. Create virtual environment (recommended):
     ```bash
     python3 -m venv venv
     ```  
-3. Activar entorno virtual:
+3. Activate virtual environment:
 
    - **Linux/Mac**:
         ```bash
@@ -66,51 +75,51 @@ Si no está instalado, seguir las instrucciones según el sistema operativo:
         venv\Scripts\activate
         ```  
 
-4. Instalar dependencias de Python:
+4. Install Python dependencies:
     ```bash
     pip install -r requirements.txt
     ```  
 
 
-## Uso de la Aplicación
-### Versión de Consola (Scraping General)
+## Application Usage
+### Console Version (General Scraping)
 ```bash
 cd scraping_console 
 python3 app_console.py
 ``` 
 
-### Versión de Novedades Literarias
+### Literary News Version
 ```bash
 cd scraping_news  
 python3 get_news.py
 ```
-### Versión con Interfaz Gráfica
+### Graphical Interface Version
 ```bash
 cd scraping_tkinter  
 python3 app_tkinter.py
 ```
-**Nota importante**: La carpeta **Libros_json** se crea automáticamente dentro de cada directorio correspondiente cuando se ejecuta el scraping por primera vez. No es necesario crearla manualmente.
+**Important note**: The **Libros_json** folder is automatically created within each corresponding directory when scraping is run for the first time. No need to create it manually.
 
-## Funcionalidades
-### Características Principales
-- Scraping de diferentes géneros literarios
-- Tres modos de operación: "Top 50 por género", "Todos los líbros por género" y "Top 50 de cada género"
-- Obtención de novedades literarias actualizadas
-- Interfaz gráfica con selección visual de parámetros
-- Progreso en tiempo real del proceso de scraping
-- Exportación automática a formato JSON
+## Functionalities
+### Key Features
+- Scraping of different literary genres
+- Three operation modes: "Top 50 by genre", "All books by genre" and "Top 50 of each genre"
+- Updated literary news retrieval
+- Graphical interface with visual parameter selection
+- Real-time scraping progress tracking
+- Automatic export to JSON format
 
-### Datos Extraídos por Libro
-- Título completo y autor
-- Género literario específico
-- Año de edición e ISBN
-- Calificación (rating) del libro
-- Sinopsis completa
-- URL de la imagen de portada
-- Enlace directo al libro en Quelibroleo
+### Data Extracted per Book
+- Complete title and author
+- Specific literary genre
+- Edition year and ISBN
+- Book rating
+- Complete synopsis
+- Cover image URL
+- Direct link to the book on Quelibroleo
 
-## Estructura de Datos
-Los datos se organizan en archivos JSON con la siguiente estructura:
+## Data Structure
+Data is organized in JSON files with the following structure:
 
 ```json
 {
@@ -127,25 +136,25 @@ Los datos se organizan en archivos JSON con la siguiente estructura:
 }
 ```
 
-## Consideraciones de Uso
-### Aspectos Técnicos
-- La aplicación incluye delays entre peticiones para evitar sobrecargar el servidor
-- Manejo de errores integrado para continuar el scraping aunque falle algún libro individual
-- Validación de URLs y datos antes del procesamiento
+## Usage Considerations
+### Technical Aspects
+- The application includes delays between requests to avoid overloading the server
+- Integrated error handling to continue scraping even if individual books fail
+- URL and data validation before processing
 
-### Consideraciones Éticas
-- Uso educativo del scraping web
-- Respeto de los términos de uso de Quelibroleo.com
-- Delay entre peticiones para no saturar el servidor
-- Almacenamiento local de datos sin redistribución comercial
+### Ethical Considerations
+- Educational use of web scraping
+- Respect for Quelibroleo.com's terms of use
+- Delay between requests to avoid server saturation
+- Local data storage without commercial redistribution
 
 
-## Dependencias Técnicas
-- Python 3.6+: Versión de Python requerida
-- requests: Para peticiones HTTP
-- beautifulsoup4: Para parsing de HTML
-- tkinter: Para la interfaz gráfica (versión Tkinter)
-- uuid: Para generación de identificadores únicos
+## Technical Dependencies
+- Python 3.6+: Required Python version
+- requests: For HTTP requests
+- beautifulsoup4: For HTML parsing
+- tkinter: For graphical interface (Tkinter version)
+- uuid: For unique identifier generation
 
-## Licencia y Uso
-Este proyecto está desarrollado con fines educativos y de aprendizaje. El uso debe realizarse respetando siempre los términos y condiciones del sitio web Quelibroleo.com. Se recomienda utilizar la aplicación de forma responsable y ética.
+## License and Usage
+This project is developed for educational and learning purposes. Use must always respect the terms and conditions of the Quelibroleo.com website. It is recommended to use the application responsibly and ethically.
